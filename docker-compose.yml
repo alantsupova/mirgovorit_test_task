@@ -13,7 +13,7 @@ services:
       - DB_PASS=pass
 
     command: >
-      sh -c "python manage.py runserver localhost:8000"
+      sh -c "sleep 30 && python manage.py runserver 0.0.0.0:8000"
 
     depends_on:
       - database
