@@ -1,0 +1,10 @@
+services:
+  web-app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./recipe_app:/recipe_app
+    command: >
+      sh -c "python manage.py runserver localhost:8000"
