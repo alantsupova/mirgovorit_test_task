@@ -5,12 +5,12 @@ from django.db.models import F, Q
 
 
 def add_product_to_recipe(request):
-    '''
+    """
     Функция добавляет к указанному рецепту указанный продукт с указанным весом.
     Если в рецепте уже есть такой продукт, то функция должна поменять его вес в этом рецепте на указанный.
     :param request:
     :return: HttpResponse
-    '''
+    """
     recipe_id = request.GET.get('recipe_id')
     product_id = request.GET.get('product_id')
     weight = request.GET.get('weight')
@@ -25,11 +25,11 @@ def add_product_to_recipe(request):
 
 
 def cook_recipe(request):
-    '''
+    """
      Функция увеличивает на единицу количество приготовленных блюд для каждого продукта, входящего в указанный рецепт.
     :param request:
     :return: HttpResponse
-    '''
+    """
     recipe_id = request.GET.get('recipe_id')
     recipe = Recipe.objects.prefetch_related('products').get(pk=recipe_id)
     Product.objects.filter(id__in=recipe.products.values_list('id')).update(usages=F('usages') + 1)
@@ -37,6 +37,12 @@ def cook_recipe(request):
 
 
 def show_recipes_without_product(request):
+    """
+    Функция возвращает HTML страницу, на которой размещена таблица. В таблице отображены id и названия всех рецептов,
+     в которых указанный продукт отсутствует, или присутствует в количестве меньше 10 грамм
+    :param request:
+    :return: HttpResponse
+    """
     product_id = request.GET.get('product_id')
     recipe_id = Weight.objects.filter(~Q(product__id__contains=product_id) | Q(weight__lt=10.0)).values_list('recipe')
     recipes = Recipe.objects.filter(id__in=recipe_id)
