@@ -5,8 +5,11 @@
     <title>Рецепты</title>
 </head>
 <body>
-{% for recipe in recipes %}
+{% for recipe in recipes_without_product %}
 <p>{{recipe.id}}  {{recipe.title}}</p>
+{% endfor %}
+{% for recipe in recipes_with_product %}
+<p>{{recipe.recipe.id}}  {{recipe.recipe.title}}</p>
 {% endfor %}
 </body>
 </html>

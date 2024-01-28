@@ -14,12 +14,12 @@ def add_product_to_recipe(request):
     recipe_id = request.GET.get('recipe_id')
     product_id = request.GET.get('product_id')
     weight = request.GET.get('weight')
-    recipe = Recipe.objects.prefetch_related('products').get(pk=recipe_id)
-    product = Product.objects.get(pk=product_id)
-    if recipe.products.filter(pk=product_id).exists():
+    if Weight.objects.filter(recipe__id=recipe_id, product__id=product_id).exists():
         (Weight.objects.filter(recipe__id=recipe_id, product__id=product_id).
          update(weight=F('weight') + float(weight)))
     else:
+        product = Product.objects.get(id=product_id)
+        recipe = Recipe.objects.get(id=recipe_id)
         Weight.objects.create(recipe=recipe, product=product, weight=weight)
     return HttpResponse("Product added to recipe successfully")
 
@@ -44,6 +44,8 @@ def show_recipes_without_product(request):
     :return: HttpResponse
     """
     product_id = request.GET.get('product_id')
-    recipe_id = Weight.objects.filter(~Q(product__id__contains=product_id) | Q(weight__lt=10.0)).values_list('recipe')
-    recipes = Recipe.objects.filter(id__in=recipe_id)
-    return render(request, 'recipes.html', {'recipes': recipes})
+    recipes_without_product = Recipe.objects.filter(~Q(products__id__contains=product_id))
+    recipes_with_product = Weight.objects.filter(Q(product__id=product_id) & Q(weight__lt=10))
+    return render(request, 'recipes.html',
+                  {'recipes_without_product': recipes_without_product,
+                   'recipes_with_product': recipes_with_product})
